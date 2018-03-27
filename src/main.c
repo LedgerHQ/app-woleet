@@ -235,7 +235,12 @@ const ux_menu_entry_t menu_about[] = {
 const ux_menu_entry_t menu_main[] = {
     //{NULL, NULL, 0, &NAME3(C_nanos_badge_, COINID, ), "Use wallet to", "view
     //accounts", 33, 12},
+#ifndef WOLEET
     {NULL, NULL, 0, NULL, "Use wallet to", "view accounts", 0, 0},
+#endif
+#ifdef WOLEET
+    {NULL, NULL, 0, NULL, "Waiting for", "signature", 0, 0},
+#endif
     {menu_about, NULL, 0, NULL, "About", NULL, 0, 0},
     {NULL, os_sched_exit, 0, &C_nanos_icon_dashboard, "Quit app", NULL, 50, 29},
     UX_MENU_END};
@@ -1587,7 +1592,12 @@ const bagl_element_t ui_verify_message_signature_nanos[] = {
     //0, NULL, NULL, NULL },
     {{BAGL_LABELINE, 0x01, 0, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
       BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
+#ifndef WOLEET
      "Sign the",
+#endif
+#ifdef WOLEET
+     "Confirm",
+#endif
      0,
      0,
      0,
@@ -1596,7 +1606,12 @@ const bagl_element_t ui_verify_message_signature_nanos[] = {
      NULL},
     {{BAGL_LABELINE, 0x01, 0, 26, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
       BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
+#ifndef WOLEET
      "message",
+#endif
+#ifdef WOLEET
+     "signature",
+#endif
      0,
      0,
      0,
@@ -1606,7 +1621,12 @@ const bagl_element_t ui_verify_message_signature_nanos[] = {
 
     {{BAGL_LABELINE, 0x02, 0, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
       BAGL_FONT_OPEN_SANS_REGULAR_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
+#ifndef WOLEET
      "Message hash",
+#endif
+#ifdef WOLEET
+    "hash to sign:",
+#endif
      0,
      0,
      0,
@@ -2297,8 +2317,13 @@ error:
 uint8_t prepare_message_signature() {
     cx_hash(&btchip_context_D.transactionHashAuthorization.header, CX_LAST,
             vars.tmp.fullAmount, 0, vars.tmp.fullAmount);
+#ifndef WOLEET
     snprintf(vars.tmp.fullAddress, sizeof(vars.tmp.fullAddress), "%.*H...%.*H",
              8, vars.tmp.fullAmount, 8, vars.tmp.fullAmount + 32 - 8);
+#endif
+#ifdef WOLEET
+   strcpy(vars.tmp.fullAddress, btchip_context_D.tmpmessaddr);
+#endif
     return 1;
 }
 

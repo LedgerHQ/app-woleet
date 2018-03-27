@@ -112,9 +112,16 @@ unsigned short btchip_apdu_sign_message_internal() {
                             (G_io_apdu_buffer[offset + 1]);
                         offset += 2;
                     }
+#ifndef WOLEET
                     if (btchip_context_D.transactionSummary.messageLength ==
                         0) {
                         L_DEBUG_APP(("Null message length\n"));
+#endif
+#ifdef WOLEET
+                    if (btchip_context_D.transactionSummary.messageLength !=
+                        64) {
+                        L_DEBUG_APP(("Invalid message length\n"));
+#endif
                         sw = BTCHIP_SW_INCORRECT_DATA;
                         CLOSE_TRY;
                         goto discard;
@@ -160,6 +167,9 @@ unsigned short btchip_apdu_sign_message_internal() {
                     }
                     cx_hash(&btchip_context_D.transactionHashFull.header, 0,
                             G_io_apdu_buffer + offset, chunkLength, NULL);
+#ifdef WOLEET
+                    memcpy(&btchip_context_D.tmpmessaddr, G_io_apdu_buffer+offset, 5);
+#endif
                     cx_hash(
                         &btchip_context_D.transactionHashAuthorization.header,
                         0, G_io_apdu_buffer + offset, chunkLength, NULL);
@@ -180,6 +190,11 @@ unsigned short btchip_apdu_sign_message_internal() {
                         CLOSE_TRY;
                         goto discard;
                     }
+#ifdef WOLEET
+                    btchip_context_D.tmpmessaddr[5] = '.';
+                    btchip_context_D.tmpmessaddr[6] = '.';
+                    memcpy(&btchip_context_D.tmpmessaddr[7], G_io_apdu_buffer+offset+26, 5); 
+#endif
                     cx_hash(&btchip_context_D.transactionHashFull.header, 0,
                             G_io_apdu_buffer + offset, apduLength, NULL);
                     cx_hash(
