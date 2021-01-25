@@ -78,14 +78,14 @@ unsigned short btchip_apdu_get_trusted_input() {
         }
 
         cx_hash(&btchip_context_D.transactionHashFull.header, CX_LAST,
-                (unsigned char WIDE *)NULL, 0, targetHash);
+                (unsigned char WIDE *)NULL, 0, targetHash, sizeof(targetHash));
 
         // Otherwise prepare
         cx_rng(G_io_apdu_buffer, 8);
         G_io_apdu_buffer[0] = MAGIC_TRUSTED_INPUT;
         G_io_apdu_buffer[1] = 0x00;
         cx_sha256_init(&hash);
-        cx_hash(&hash.header, CX_LAST, targetHash, 32, G_io_apdu_buffer + 4);
+        cx_hash(&hash.header, CX_LAST, targetHash, 32, G_io_apdu_buffer + 4, sizeof(targetHash));
 
         btchip_write_u32_le(G_io_apdu_buffer + 4 + 32,
                             btchip_context_D.transactionTargetInput);
@@ -94,7 +94,7 @@ unsigned short btchip_apdu_get_trusted_input() {
 
         cx_hmac_sha256(N_btchip.bkp.trustedinput_key,
                        sizeof(N_btchip.bkp.trustedinput_key), G_io_apdu_buffer,
-                       TRUSTEDINPUT_SIZE, trustedInputSignature);
+                       TRUSTEDINPUT_SIZE, trustedInputSignature, sizeof(trustedInputSignature));
         os_memmove(G_io_apdu_buffer + TRUSTEDINPUT_SIZE, trustedInputSignature,
                    8);
 

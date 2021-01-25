@@ -310,7 +310,7 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
             if (!btchip_context_D.segwitParsedOnce) {
                 cx_hash(&btchip_context_D.transactionHashFull.header, 0,
                         G_io_apdu_buffer + ISO_OFFSET_CDATA + hashOffset,
-                        apduLength - hashOffset, NULL);
+                        apduLength - hashOffset, NULL, 0);
             }
 
             if (btchip_context_D.transactionContext.firstSigned) {
@@ -355,7 +355,7 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
                     cx_hash(
                         &btchip_context_D.transactionHashAuthorization.header,
                         0, G_io_apdu_buffer + ISO_OFFSET_CDATA, apduLength,
-                        NULL);
+                        NULL, 0);
                 }
                 G_io_apdu_buffer[0] = 0x00;
                 btchip_context_D.outLength = 1;
@@ -366,7 +366,7 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
             if (!btchip_context_D.usingSegwit) {
                 cx_hash(&btchip_context_D.transactionHashAuthorization.header,
                         CX_LAST, G_io_apdu_buffer + ISO_OFFSET_CDATA,
-                        apduLength, authorizationHash);
+                        apduLength, authorizationHash, sizeof(authorizationHash));
             }
 
             if (btchip_context_D.usingSegwit) {
@@ -374,26 +374,28 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
                     cx_hash(&btchip_context_D.transactionHashFull.header,
                             CX_LAST,
                             btchip_context_D.segwit.cache.hashedOutputs, 0,
-                            btchip_context_D.segwit.cache.hashedOutputs);
+                            btchip_context_D.segwit.cache.hashedOutputs,
+                            sizeof(btchip_context_D.segwit.cache.hashedOutputs));
                     cx_sha256_init(&btchip_context_D.transactionHashFull);
                     cx_hash(&btchip_context_D.transactionHashFull.header,
                             CX_LAST,
                             btchip_context_D.segwit.cache.hashedOutputs,
                             sizeof(btchip_context_D.segwit.cache.hashedOutputs),
-                            btchip_context_D.segwit.cache.hashedOutputs);
+                            btchip_context_D.segwit.cache.hashedOutputs,
+                            sizeof(btchip_context_D.segwit.cache.hashedOutputs));
                     L_DEBUG_BUF(("hashOutputs\n",
                                  btchip_context_D.segwit.cache.hashedOutputs,
                                  32));
                     cx_hash(
                         &btchip_context_D.transactionHashAuthorization.header,
-                        CX_LAST, G_io_apdu_buffer, 0, authorizationHash);
+                        CX_LAST, G_io_apdu_buffer, 0, authorizationHash, sizeof(authorizationHash));
                 } else {
                     cx_hash(
                         &btchip_context_D.transactionHashAuthorization.header,
                         CX_LAST,
                         (unsigned char WIDE *)&btchip_context_D.segwit.cache,
                         sizeof(btchip_context_D.segwit.cache),
-                        authorizationHash);
+                        authorizationHash, sizeof(authorizationHash));
                 }
             }
 

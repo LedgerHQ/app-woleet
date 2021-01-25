@@ -124,12 +124,12 @@ unsigned short btchip_apdu_hash_sign() {
                 ("Finalize hash with\n", dataBuffer, sizeof(dataBuffer)));
 
             cx_hash(&btchip_context_D.transactionHashFull.header, CX_LAST,
-                    dataBuffer, sizeof(dataBuffer), hash1);
+                    dataBuffer, sizeof(dataBuffer), hash1, sizeof(hash1));
             L_DEBUG_BUF(("Hash1\n", hash1, sizeof(hash1)));
 
             // Rehash
             cx_sha256_init(&localHash);
-            cx_hash(&localHash.header, CX_LAST, hash1, sizeof(hash1), hash2);
+            cx_hash(&localHash.header, CX_LAST, hash1, sizeof(hash1), hash2, sizeof(hash2));
             L_DEBUG_BUF(("Hash2\n", hash2, sizeof(hash2)));
 
             // Sign

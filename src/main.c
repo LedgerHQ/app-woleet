@@ -2296,7 +2296,7 @@ error:
 #define HASH_LENGTH 4
 uint8_t prepare_message_signature() {
     cx_hash(&btchip_context_D.transactionHashAuthorization.header, CX_LAST,
-            vars.tmp.fullAmount, 0, vars.tmp.fullAmount);
+            vars.tmp.fullAmount, 0, vars.tmp.fullAmount, sizeof(vars.tmp.fullAmount));
    strcpy(vars.tmp.fullAddress, btchip_context_D.tmpmessaddr);
     return 1;
 }
